@@ -1,0 +1,10 @@
+[
+    {"numero": 101, "tipo": "Solteiro", "capacidade": 1, "diaria": 120.0, "status": "disponivel"},
+    {"numero": 102, "tipo": "Casal", "capacidade": 2, "diaria": 180.0, "status": "ocupado"},
+    {"numero": 103, "tipo": "Casal", "capacidade": 2, "diaria": 180.0, "status": "disponivel"},
+    {"numero": 201, "tipo": "Família", "capacidade": 4, "diaria": 290.0, "status": "disponivel"},
+    {"numero": 202, "tipo": "Família", "capacidade": 5, "diaria": 320.0, "status": "manutencao"},
+    {"numero": 203, "tipo": "Suíte", "capacidade": 2, "diaria": 350.0, "status": "ocupado"},
+    {"numero": 301, "tipo": "Suíte", "capacidade": 3, "diaria": 410.0, "status": "disponivel"},
+    {"numero": 302, "tipo": "Solteiro", "capacidade": 1, "diaria": 120.0, "status": "ocupado"}
+]

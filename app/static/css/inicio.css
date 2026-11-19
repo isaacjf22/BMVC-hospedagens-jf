@@ -1,0 +1,163 @@
+/* Identidade visual da Hospedagem JF */
+:root {
+    --verde: #2f5d50;
+    --verde-claro: #e6efe9;
+    --areia: #f7f3ec;
+    --terracota: #c8673b;
+    --texto: #2b2b2b;
+    --ocupado: #b23a3a;
+    --manutencao: #c08a1e;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: "Segoe UI", Arial, sans-serif;
+    background: var(--areia);
+    color: var(--texto);
+}
+
+.topo {
+    background: var(--verde);
+    color: #fff;
+    text-align: center;
+    padding: 48px 16px 40px;
+}
+
+.topo h1 {
+    margin: 0 0 8px;
+    font-size: 2.6rem;
+    letter-spacing: 1px;
+}
+
+.topo p {
+    margin: 0;
+    opacity: 0.9;
+}
+
+.destaque {
+    max-width: 480px;
+    margin: -22px auto 0;
+    background: var(--terracota);
+    color: #fff;
+    text-align: center;
+    padding: 14px;
+    border-radius: 10px;
+    font-size: 1.1rem;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+main {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 24px 16px;
+}
+
+main h2 {
+    color: var(--verde);
+}
+
+.filtros {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+}
+
+.botoes-status {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.filtro {
+    border: 2px solid var(--verde);
+    background: #fff;
+    color: var(--verde);
+    padding: 6px 14px;
+    border-radius: 20px;
+    cursor: pointer;
+    font-size: 0.95rem;
+}
+
+.filtro:hover,
+.filtro.ativo {
+    background: var(--verde);
+    color: #fff;
+}
+
+select {
+    padding: 6px 10px;
+    border-radius: 6px;
+    border: 1px solid #aaa;
+    font-size: 0.95rem;
+}
+
+.contador {
+    color: #666;
+    font-style: italic;
+}
+
+.grade-quartos {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+    gap: 16px;
+}
+
+.quarto {
+    background: #fff;
+    border-radius: 10px;
+    padding: 16px;
+    border-top: 5px solid var(--verde);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+    transition: transform 0.2s;
+}
+
+.quarto:hover {
+    transform: translateY(-4px);
+}
+
+.quarto h3 {
+    margin: 0;
+}
+
+.quarto .tipo {
+    margin: 4px 0 8px;
+    color: var(--terracota);
+    font-weight: bold;
+}
+
+.quarto ul {
+    padding-left: 18px;
+    margin: 0 0 12px;
+}
+
+.selo {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 12px;
+    font-size: 0.85rem;
+    color: #fff;
+}
+
+.selo.disponivel { background: var(--verde); }
+.selo.ocupado { background: var(--ocupado); }
+.selo.manutencao { background: var(--manutencao); }
+
+.vazio {
+    text-align: center;
+    padding: 24px;
+    background: var(--verde-claro);
+    border-radius: 10px;
+}
+
+.rodape {
+    text-align: center;
+    padding: 20px;
+    font-size: 0.85rem;
+    color: #777;
+}
