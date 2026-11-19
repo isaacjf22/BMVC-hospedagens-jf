@@ -102,7 +102,7 @@ python route.py
 
 Depois, abra **http://localhost:8080/** no navegador. A página de exemplo da base continua disponível em `/helper`.
 
-> O `route.py` precisa ser executado **na raiz do projeto**: os caminhos dos templates, do CSS/JS e do `quartos.json` são relativos a essa pasta.
+> O terminal mostra `Listening on http://0.0.0.0:8080/`, mas no navegador use **`localhost:8080`**: o endereço `0.0.0.0` não abre no Windows.
 
 ### Com Docker
 
@@ -118,7 +118,8 @@ O container instala o Bottle e as demais bibliotecas do BMVC e executa o `route.
 | Mensagem ou sintoma | Causa provável | Solução |
 |---|---|---|
 | `ModuleNotFoundError: No module named 'bottle'` | O Bottle não está instalado | Rodar `pip install bottle` |
-| `FileNotFoundError: ... quartos.json` | O `route.py` foi executado fora da raiz do projeto | Entrar na pasta `BMVC-hospedagens-jf` e rodar `python route.py` |
+| "Não é possível acessar esse site" ou erro `-108` (`ERR_ADDRESS_INVALID`) no navegador | Foi aberto o endereço `http://0.0.0.0:8080/` mostrado no terminal, ou o servidor não está rodando | Abrir **http://localhost:8080/** com o `route.py` rodando |
+| `Not found: '/...'` (erro 404) | A rota digitada não existe | Usar `/`, `/inicio` ou `/helper` |
 | `OSError: [WinError 10048]` ou `Address already in use` | Já existe outro programa (ou outro servidor) usando a porta 8080 | Fechar o servidor anterior (Ctrl + C no terminal) e rodar de novo |
 | Página sem estilo ou filtros sem funcionar | O CSS ou o JS não foi carregado | Conferir no F12, aba *Rede*, se `inicio.css` e `inicio.js` retornam status 200 |
 | `python` não é reconhecido (Windows) | O Python não está no PATH | Usar `py route.py` ou reinstalar o Python marcando *Add to PATH* |
