@@ -10,11 +10,13 @@
 </head>
 
 <body>
-    % rotulos = {'disponivel': 'Disponível', 'ocupado': 'Ocupado', 'manutencao': 'Em manutenção'}
-
     <header class="topo">
         <h1>Hospedagem JF</h1>
         <p>Quartos confortáveis, café da manhã caseiro e atendimento de família.</p>
+        <nav class="menu">
+            <a href="/" class="atual">Página inicial</a>
+            <a href="/quartos">Gerenciar quartos</a>
+        </nav>
     </header>
 
     <section class="destaque">
@@ -55,7 +57,7 @@
                     <li>Capacidade: {{quarto.capacidade}} pessoa(s)</li>
                     <li>Diária: R$ {{'%.2f' % quarto.diaria}}</li>
                 </ul>
-                <span class="selo {{quarto.status}}">{{rotulos[quarto.status]}}</span>
+                <span class="selo {{quarto.status}}">{{quarto.rotulo_status}}</span>
             </article>
             % end
         </div>
@@ -64,7 +66,7 @@
     </main>
 
     <footer class="rodape">
-        Hospedagem JF &middot; Projeto BMVC I &middot; Orientação a Objetos (UnB)
+        Hospedagem JF &middot; Projeto BMVC II &middot; Orientação a Objetos (UnB)
     </footer>
 </body>
 

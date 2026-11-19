@@ -38,6 +38,29 @@ body {
     opacity: 0.9;
 }
 
+/* Menu de navegação (usado em todas as páginas) */
+.menu {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 18px;
+}
+
+.menu a {
+    color: #fff;
+    text-decoration: none;
+    padding: 6px 14px;
+    border-radius: 20px;
+    border: 1px solid rgba(255, 255, 255, 0.5);
+}
+
+.menu a:hover,
+.menu a.atual {
+    background: #fff;
+    color: var(--verde);
+}
+
 .destaque {
     max-width: 480px;
     margin: -22px auto 0;

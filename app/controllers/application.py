@@ -1,21 +1,38 @@
-from bottle import template
+from bottle import template, request, redirect
 
 from app.controllers.datarecord import DataRecord
+from app.models.quarto import Quarto
 
 
 class Application():
+
+    # Mensagens mostradas na listagem depois de cada operação (?msg=...)
+    MENSAGENS = {
+        'criado': 'Quarto cadastrado com sucesso.',
+        'atualizado': 'Quarto atualizado com sucesso.',
+        'excluido': 'Quarto excluído com sucesso.',
+        'nao_encontrado': 'Quarto não encontrado.',
+    }
 
     def __init__(self):
         self.pages = {
             'helper': self.helper,
             'inicio': self.inicio,
+            'quartos': self.quartos,
+            'quarto_novo': self.quarto_novo,
+            'quarto_criar': self.quarto_criar,
+            'quarto_editar': self.quarto_editar,
+            'quarto_atualizar': self.quarto_atualizar,
+            'quarto_excluir': self.quarto_excluir,
         }
         self.models = DataRecord()
 
 
-    def render(self,page):
-       content = self.pages.get(page, self.helper)
-       return content()
+    def render(self, page, parametro=None):
+        content = self.pages.get(page, self.helper)
+        if parametro is None:
+            return content()
+        return content(parametro)
 
 
     def helper(self):
@@ -28,3 +45,74 @@ class Application():
         livres = len([q for q in quartos if q.disponivel()])
         return template('app/views/html/inicio', quartos=quartos,
                         livres=livres)
+
+    # ----------------------------------------------------------------------
+    # CRUD de quartos
+
+    def quartos(self):
+        """Read: listagem de gerenciamento dos quartos."""
+        codigo = request.query.get('msg')
+        return template('app/views/html/quartos',
+                        quartos=self.models.listar_quartos(),
+                        mensagem=self.MENSAGENS.get(codigo))
+
+
+    def quarto_novo(self):
+        """Create (GET): formulário de cadastro vazio."""
+        return self._formulario(dados={'status': 'disponivel'})
+
+
+    def quarto_criar(self):
+        """Create (POST): valida, salva e volta para a listagem."""
+        dados = self._dados_do_formulario()
+        try:
+            quarto = Quarto(**dados)
+            self.models.adicionar_quarto(quarto)
+        except ValueError as erro:
+            return self._formulario(dados=dados, erro=str(erro))
+        redirect('/quartos?msg=criado')
+
+
+    def quarto_editar(self, numero):
+        """Update (GET): formulário preenchido com os dados atuais."""
+        quarto = self.models.buscar_quarto(numero)
+        if quarto is None:
+            redirect('/quartos?msg=nao_encontrado')
+        return self._formulario(dados=quarto.to_dict(), numero_original=numero)
+
+
+    def quarto_atualizar(self, numero):
+        """Update (POST): valida, salva e volta para a listagem."""
+        dados = self._dados_do_formulario()
+        try:
+            quarto = Quarto(**dados)
+            self.models.atualizar_quarto(numero, quarto)
+        except ValueError as erro:
+            return self._formulario(dados=dados, erro=str(erro),
+                                    numero_original=numero)
+        redirect('/quartos?msg=atualizado')
+
+
+    def quarto_excluir(self, numero):
+        """Delete (POST): remove o quarto e volta para a listagem."""
+        try:
+            self.models.remover_quarto(numero)
+        except ValueError:
+            redirect('/quartos?msg=nao_encontrado')
+        redirect('/quartos?msg=excluido')
+
+    # ----------------------------------------------------------------------
+    # Auxiliares
+
+    def _dados_do_formulario(self):
+        """Lê os campos enviados pelo formulário (como texto)."""
+        campos = ('numero', 'tipo', 'capacidade', 'diaria', 'status')
+        return {campo: request.forms.getunicode(campo, default='').strip()
+                for campo in campos}
+
+
+    def _formulario(self, dados, erro=None, numero_original=None):
+        """Monta a página de formulário, usada no cadastro e na edição."""
+        return template('app/views/html/quarto_form', dados=dados, erro=erro,
+                        numero_original=numero_original,
+                        tipos=Quarto.TIPOS, status=Quarto.STATUS)

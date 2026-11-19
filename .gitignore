@@ -13,3 +13,9 @@ env/
 .idea/
 .DS_Store
 Thumbs.db
+
+# Claude Code (arquivos locais do assistente)
+CLAUDE.md
+CLAUDE.local.md
+.claude/
+.mcp.json

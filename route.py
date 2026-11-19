@@ -34,6 +34,33 @@ def inicio():
     return ctl.render('inicio')
 
 
+# CRUD de quartos: GET mostra páginas, POST altera dados (e redireciona).
+
+@app.route('/quartos')
+def quartos():
+    return ctl.render('quartos')
+
+@app.route('/quartos/novo', method='GET')
+def quarto_novo():
+    return ctl.render('quarto_novo')
+
+@app.route('/quartos/novo', method='POST')
+def quarto_criar():
+    return ctl.render('quarto_criar')
+
+@app.route('/quartos/<numero:int>/editar', method='GET')
+def quarto_editar(numero):
+    return ctl.render('quarto_editar', numero)
+
+@app.route('/quartos/<numero:int>/editar', method='POST')
+def quarto_atualizar(numero):
+    return ctl.render('quarto_atualizar', numero)
+
+@app.route('/quartos/<numero:int>/excluir', method='POST')
+def quarto_excluir(numero):
+    return ctl.render('quarto_excluir', numero)
+
+
 #-----------------------------------------------------------------------------
 
 
