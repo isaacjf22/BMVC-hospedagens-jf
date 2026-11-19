@@ -14,7 +14,7 @@ O projeto segue a arquitetura **MVC** no formato do BMVC: as rotas ficam no `rou
 
 | Nível | Propósito | Interface | Vídeo | Commit de entrega | Status |
 |:---:|---|---|---|---|:---:|
-| **1** | Servir uma página própria, com propósito claro, carregando CSS e JS funcionais | Web (`/`) | Em breve | `nivel 1 concluído` | Em andamento |
+| **1** | Servir uma página própria, com propósito claro, carregando CSS e JS funcionais | Web (`/`) | [Assistir](https://youtu.be/LI_jX0NuIfc) | `nivel 1 concluído` | Concluído |
 | **2** | A liberar | — | — | — | Bloqueado |
 | **3** | A liberar | — | — | — | Bloqueado |
 | **4** | A liberar | — | — | — | Bloqueado |
@@ -31,7 +31,7 @@ O projeto segue a arquitetura **MVC** no formato do BMVC: as rotas ficam no `rou
 - **CSS** (`inicio.css`): identidade visual própria, com cartões para os quartos e selos coloridos por status.
 - **JS** (`inicio.js`): filtros por status (botões) e por tipo (lista de seleção), com o contador "Mostrando X de Y quartos" e um aviso quando nenhum quarto atende ao filtro.
 
-**Vídeo de apresentação (até 3 min):** em breve
+**Vídeo de apresentação (até 3 min):** [assistir no YouTube](https://youtu.be/LI_jX0NuIfc)
 
 ## Funcionalidades
 
