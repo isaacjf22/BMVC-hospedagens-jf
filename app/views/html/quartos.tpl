@@ -18,6 +18,13 @@
             <a href="/">Página inicial</a>
             <a href="/quartos" class="atual">Gerenciar quartos</a>
         </nav>
+        % if usuario:
+        <div class="usuario-logado">
+            <span>Logado como <strong>{{usuario.nome}}</strong></span>
+            <span class="perfil">{{usuario.rotulo_perfil}}</span>
+            <a href="/logout" id="sair">Sair</a>
+        </div>
+        % end
     </header>
 
     <main>
@@ -75,7 +82,7 @@
     </main>
 
     <footer class="rodape">
-        Hospedagem JF &middot; Projeto BMVC II &middot; Orientação a Objetos (UnB)
+        Hospedagem JF &middot; Projeto BMVC III &middot; Orientação a Objetos (UnB)
     </footer>
 </body>
 

@@ -6,7 +6,7 @@ O projeto parte da base [bmvc_start_from_this](https://github.com/hgmachine/bmvc
 
 ## Finalidade
 
-Apresentar e gerenciar os quartos de uma hospedagem pela web: quais quartos existem, de que tipo são, quantas pessoas cabem em cada um, quanto custa a diária e se estão disponíveis, ocupados ou em manutenção. A partir do nível 2, os quartos podem ser cadastrados, editados e excluídos pelo navegador.
+Apresentar e gerenciar os quartos de uma hospedagem pela web: quais quartos existem, de que tipo são, quantas pessoas cabem em cada um, quanto custa a diária e se estão disponíveis, ocupados ou em manutenção. A partir do nível 2, os quartos podem ser cadastrados, editados e excluídos pelo navegador. A partir do nível 3, essa gestão fica numa área restrita, que só abre para funcionários com login e senha.
 
 O projeto segue a arquitetura **MVC** no formato do BMVC: as rotas ficam no `route.py`, o controlador `Application` decide qual página montar, o `DataRecord` cuida do acesso aos dados e as páginas são templates `.tpl` do Bottle, com CSS e JavaScript próprios.
 
@@ -16,7 +16,7 @@ O projeto segue a arquitetura **MVC** no formato do BMVC: as rotas ficam no `rou
 |:---:|---|---|---|---|:---:|
 | **1** | Servir uma página própria, com propósito claro, carregando CSS e JS funcionais | Web (`/`) | [Assistir](https://youtu.be/LI_jX0NuIfc) | `nivel 1 concluído` | Concluído |
 | **2** | CRUD completo do modelo `Quarto`, com persistência em JSON e validação no servidor | Web (`/quartos`) | [Assistir](https://youtu.be/LgQ_bkzLPaE) | `nivel 2 concluído` | Concluído |
-| **3** | A liberar | — | — | — | Bloqueado |
+| **3** | Controle de acesso: login, sessão e área restrita protegendo o CRUD de quartos | Web (`/login`) | — | `nivel 3 concluído` | Concluído |
 | **4** | A liberar | — | — | — | Bloqueado |
 
 > **Como ler a tabela:** a coluna *Commit de entrega* mostra o nome do commit que marca o nível finalizado. Para ver o projeto naquele momento, basta procurar esse commit (ou a tag de mesmo nome) no histórico.
@@ -52,31 +52,59 @@ O projeto segue a arquitetura **MVC** no formato do BMVC: as rotas ficam no `rou
 
 **Vídeo de apresentação (até 6 min):** [assistir no YouTube](https://youtu.be/LgQ_bkzLPaE)
 
+### Nível 3: Login e área restrita
+
+**Propósito:** adicionar controle de acesso ao sistema: um **login** para os funcionários da hospedagem e uma **área restrita** (o gerenciamento de quartos), mantendo o CRUD do nível 2 funcionando.
+
+| Página / ação | Rota | Acesso |
+|---|---|---|
+| Página inicial | `GET /` | Pública |
+| Formulário de login | `GET /login` | Pública |
+| Conferir login e senha | `POST /login` | Pública |
+| Sair do sistema | `GET /logout` | Logado |
+| Gerenciar quartos (listar, cadastrar, editar, excluir) | `/quartos...` (GET **e** POST) | **Restrita** |
+
+- **Model (`Usuario`):** login, nome, perfil (`admin` ou `recepcionista`) e a senha guardada **só como hash** (PBKDF2-SHA256 com salt aleatório, usando apenas a biblioteca padrão: `hashlib`, `secrets` e `hmac`). O hash e o salt são atributos **privados** (`__hash_senha`, `__salt`): ninguém de fora lê esses valores, e a única forma de conferir uma senha é o método `verificar_senha()`, que compara com `hmac.compare_digest`.
+- **Herança (`ArquivoJSON`):** a leitura e a gravação de JSON, que antes ficavam só no `DataRecord`, foram para uma classe base. `DataRecord` (quartos) e `UsuarioRecord` (usuários) herdam dela e só dizem qual modelo guardam; a conversão usa o `to_dict()`/`from_dict()` de cada modelo (polimorfismo).
+- **Auth:** concentra o controle de acesso. Ao entrar, gera um identificador de sessão aleatório (`secrets.token_urlsafe`), guarda no servidor (dicionário id → login) e envia ao navegador num **cookie assinado** (`httponly` e `samesite=lax`). Se o cookie for alterado, a assinatura não confere e o acesso é negado. A chave de assinatura vem da variável de ambiente `HOSPEDAGEM_SEGREDO` (o valor padrão serve só para desenvolvimento).
+- **Application:** compõe o `Auth` (`self.auth`), assim como compõe o `DataRecord` (`self.models`). As páginas restritas ficam no conjunto `RESTRITAS`, e o `render()` confere o login **antes** de chamar qualquer uma delas. Como toda rota passa pelo `render()`, as rotas `POST` (criar, editar, excluir) também ficam protegidas. Sem login, o usuário é redirecionado para `/login` com o aviso "Faça login para acessar a área de gestão".
+- **Login com erro genérico:** se o login ou a senha estiverem errados, a mensagem é sempre "Usuário ou senha inválidos.", sem dizer qual dos dois errou.
+- **Páginas restritas:** mostram o nome e o perfil de quem está logado e o botão **Sair**.
+- **CSS** (`login.css`): cartão de login com a identidade visual da hospedagem; o `inicio.css` ganhou a barra do usuário logado.
+- **JS** (`login.js`): botão **Mostrar/Ocultar** senha, aviso de **Caps Lock** ligado e bloqueio do envio com campos vazios. Nas páginas de gestão continua o `gestao.js` (busca, confirmação de exclusão etc.).
+
+**Vídeo de apresentação (até 10 min):** a publicar
+
 ## Funcionalidades
 
 - **Página inicial:** nome, descrição da hospedagem e destaque com quantos quartos estão disponíveis no dia.
 - **Quartos:** 8 quartos de exemplo dos tipos Solteiro, Casal, Família e Suíte, com capacidade, diária e status (disponível, ocupado ou em manutenção).
 - **Filtros:** por status e por tipo, que podem ser combinados, atualizando a lista sem recarregar a página.
-- **Gerenciar quartos** (`/quartos`): cadastrar, editar e excluir quartos, com busca na tabela, confirmação de exclusão e mensagens de erro legíveis (ex.: "Já existe um quarto com o número 101.").
+- **Login** (`/login`): acesso dos funcionários, com senha guardada como hash e sessão por cookie assinado.
+- **Gerenciar quartos** (`/quartos`, área restrita): cadastrar, editar e excluir quartos, com busca na tabela, confirmação de exclusão e mensagens de erro legíveis (ex.: "Já existe um quarto com o número 101.").
 
 ## Arquitetura (MVC)
 
 | Papel | O que faz | Onde está |
 |---|---|---|
 | **Rota** | Recebe a requisição e só chama `ctl.render('<página>')`. Não contém lógica | `route.py` |
-| **Controller** | O `Application` guarda as páginas em `self.pages` e monta cada uma, buscando os dados no `DataRecord` | `app/controllers/application.py` |
-| **DataRecord** | Único lugar que lê e grava o arquivo de dados, convertendo-o em objetos do Model, e oferece as operações do CRUD | `app/controllers/datarecord.py` |
-| **Model** | Classes com os dados encapsulados e as regras do próprio objeto (validação dos campos, se o quarto está disponível). Não conhece o Bottle | `app/models/` |
+| **Controller** | O `Application` guarda as páginas em `self.pages` e monta cada uma, buscando os dados no `DataRecord`. Antes, confere com o `Auth` se a página é restrita | `app/controllers/application.py` |
+| **Auth** | Login, logout e sessões (cookie assinado + dicionário no servidor) | `app/controllers/auth.py` |
+| **ArquivoJSON** | Classe base que lê e grava listas de objetos em JSON | `app/controllers/arquivojson.py` |
+| **DataRecord / UsuarioRecord** | Herdam do `ArquivoJSON` e oferecem as operações de quartos e de usuários | `app/controllers/datarecord.py`, `usuariorecord.py` |
+| **Model** | Classes com os dados encapsulados e as regras do próprio objeto (validação dos campos, se o quarto está disponível, conferência da senha). Não conhece o Bottle | `app/models/` |
 | **View** | Templates que exibem os dados, com CSS e JS servidos pela rota `/static` | `app/views/html/` e `app/static/` |
 
 O fluxo de uma requisição é:
 
 ```
-Navegador  →  route.py  →  Application  →  DataRecord  →  quartos.json
-                               ↓                ↓
-                  inicio.tpl / quartos.tpl  objetos Quarto
-                  quarto_form.tpl
-                       (+ CSS e JS)
+Navegador  →  route.py  →  Application  →  Auth  →  UsuarioRecord  →  usuarios.json
+                               │   (página restrita sem login? → /login)
+                               ↓
+                           DataRecord  →  quartos.json
+                               ↓
+                  inicio.tpl / login.tpl / quartos.tpl
+                  quarto_form.tpl  (+ CSS e JS)
 ```
 
 Nas ações que alteram dados (POST), o `Application` pede a operação ao `DataRecord`, que salva o JSON, e então redireciona o navegador de volta para `/quartos`.
@@ -89,21 +117,28 @@ Assim, a rota não tem lógica, o controlador não mexe direto no arquivo de dad
 route.py                Ponto de entrada: app Bottle, rotas e servidor na porta 8080
 app/
 ├── controllers/
-│   ├── application.py  Application: mapeia as páginas e renderiza os templates
-│   ├── datarecord.py   DataRecord: lê, grava e faz o CRUD dos quartos no JSON
+│   ├── application.py  Application: mapeia as páginas, protege as restritas e renderiza
+│   ├── auth.py         Auth: login, logout e sessões (cookie assinado)
+│   ├── arquivojson.py  ArquivoJSON: classe base que lê e grava JSON
+│   ├── datarecord.py   DataRecord: CRUD dos quartos (herda de ArquivoJSON)
+│   ├── usuariorecord.py  UsuarioRecord: usuários do sistema (herda de ArquivoJSON)
 │   └── db/
-│       └── quartos.json  "Banco" dos quartos
+│       ├── quartos.json   "Banco" dos quartos
+│       └── usuarios.json  "Banco" dos usuários (criado pelo criar_usuario.py, fora do Git)
 ├── models/
-│   └── quarto.py       Classe Quarto (encapsulamento e validação)
+│   ├── quarto.py       Classe Quarto (encapsulamento e validação)
+│   └── usuario.py      Classe Usuario (hash da senha privado, verificar_senha)
 ├── views/html/
 │   ├── inicio.tpl      Página inicial da hospedagem
+│   ├── login.tpl       Página de login
 │   ├── quartos.tpl     Listagem de gerenciamento (Read e Delete)
 │   ├── quarto_form.tpl Formulário de cadastro e edição (Create e Update)
 │   └── helper.tpl      Página de exemplo da base do professor
 └── static/
-    ├── css/            inicio.css, gestao.css (e helper.css, da base)
-    ├── js/             inicio.js, gestao.js (e helper.js, da base)
+    ├── css/            inicio.css, gestao.css, login.css (e helper.css, da base)
+    ├── js/             inicio.js, gestao.js, login.js (e helper.js, da base)
     └── img/
+criar_usuario.py        Script que cadastra usuários pelo terminal
 Dockerfile              Imagem com Python 3.12 e as bibliotecas do BMVC
 bmvc_setup.sh           Comandos para criar e rodar o container
 docker_install.sh       Instalação do Docker no Ubuntu
@@ -122,12 +157,27 @@ A estrutura de pastas é herdada da base do professor e se mantém em todos os n
 git clone https://github.com/isaacjf22/BMVC-hospedagens-jf.git
 cd BMVC-hospedagens-jf
 pip install bottle
+python criar_usuario.py   # só na primeira vez: cria o administrador
 python route.py
 ```
 
-Depois, abra **http://localhost:8080/** no navegador. O gerenciamento de quartos fica em **http://localhost:8080/quartos**. A página de exemplo da base continua disponível em `/helper`.
+Depois, abra **http://localhost:8080/** no navegador. O gerenciamento de quartos fica em **http://localhost:8080/quartos** e pede login. A página de exemplo da base continua disponível em `/helper`.
 
 > O terminal mostra `Listening on http://0.0.0.0:8080/`, mas no navegador use **`localhost:8080`**: o endereço `0.0.0.0` não abre no Windows.
+
+### Primeiro usuário (administrador)
+
+Nenhuma senha fica gravada no código. Antes de usar a área restrita, crie o primeiro usuário pelo terminal, na pasta do projeto:
+
+```bash
+python criar_usuario.py
+```
+
+O script pergunta o login, o nome e a senha (a senha não aparece enquanto é digitada e precisa ter pelo menos 6 caracteres). O primeiro usuário é sempre **Administrador**; rodando o script de novo, dá para criar outros usuários e escolher o perfil. Os usuários ficam em `app/controllers/db/usuarios.json`, que guarda só o **hash** das senhas e está no `.gitignore`.
+
+Enquanto não existir nenhum usuário, a página `/login` mostra um aviso lembrando de rodar o script.
+
+**Chave dos cookies:** fora do ambiente de desenvolvimento, defina a variável de ambiente `HOSPEDAGEM_SEGREDO` com um valor longo e aleatório antes de rodar o `route.py` (para gerar um: `python -c "import secrets; print(secrets.token_hex(32))"`).
 
 ### Com Docker
 
@@ -136,7 +186,7 @@ docker build -t bmvci .
 docker run -d -p 8080:8080 -v $(pwd):/bmeta bmvci
 ```
 
-O container instala o Bottle e as demais bibliotecas do BMVC e executa o `route.py`. A página fica no mesmo endereço: **http://localhost:8080/**.
+O container instala o Bottle e as demais bibliotecas do BMVC e executa o `route.py`. Para criar o primeiro usuário dentro do container: `docker exec -it <id_do_container> python criar_usuario.py`. A página fica no mesmo endereço: **http://localhost:8080/**.
 
 ### Problemas comuns
 
@@ -144,7 +194,9 @@ O container instala o Bottle e as demais bibliotecas do BMVC e executa o `route.
 |---|---|---|
 | `ModuleNotFoundError: No module named 'bottle'` | O Bottle não está instalado | Rodar `pip install bottle` |
 | "Não é possível acessar esse site" ou erro `-108` (`ERR_ADDRESS_INVALID`) no navegador | Foi aberto o endereço `http://0.0.0.0:8080/` mostrado no terminal, ou o servidor não está rodando | Abrir **http://localhost:8080/** com o `route.py` rodando |
-| `Not found: '/...'` (erro 404) | A rota digitada não existe | Usar `/`, `/inicio`, `/quartos`, `/quartos/novo` ou `/helper` |
+| `Not found: '/...'` (erro 404) | A rota digitada não existe | Usar `/`, `/inicio`, `/login`, `/quartos`, `/quartos/novo` ou `/helper` |
+| `/quartos` sempre volta para o login | Não há sessão ativa (reiniciar o servidor também encerra as sessões) | Entrar de novo em `/login` |
+| "Usuário ou senha inválidos." | Login ou senha errados, ou nenhum usuário criado | Conferir o Caps Lock; se preciso, criar um usuário com `python criar_usuario.py` |
 | `OSError: [WinError 10048]` ou `Address already in use` | Já existe outro programa (ou outro servidor) usando a porta 8080 | Fechar o servidor anterior (Ctrl + C no terminal) e rodar de novo |
 | Página sem estilo ou filtros sem funcionar | O CSS ou o JS não foi carregado | Conferir no F12, aba *Rede*, se os arquivos `.css` e `.js` da página retornam status 200 |
 | `python` não é reconhecido (Windows) | O Python não está no PATH | Usar `py route.py` ou reinstalar o Python marcando *Add to PATH* |

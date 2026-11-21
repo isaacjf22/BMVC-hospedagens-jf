@@ -1,0 +1,124 @@
+/* Página de login. As cores vêm das variáveis definidas em inicio.css. */
+
+.cartao-login {
+    max-width: 400px;
+    margin: 0 auto;
+    background: #fff;
+    padding: 28px;
+    border-radius: 12px;
+    border-top: 5px solid var(--terracota);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+}
+
+.cartao-login h2 {
+    margin-top: 0;
+    color: var(--verde);
+}
+
+.explicacao {
+    margin-top: -4px;
+    color: #5a5a5a;
+}
+
+#form-login {
+    display: grid;
+    gap: 8px;
+}
+
+#form-login label {
+    font-weight: 600;
+    margin-top: 8px;
+}
+
+#form-login input {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid #c9c2b6;
+    border-radius: 6px;
+    font: inherit;
+}
+
+#form-login input:focus {
+    outline: 2px solid var(--verde);
+    border-color: var(--verde);
+}
+
+#form-login input.invalido {
+    border-color: var(--ocupado);
+    background: #fdf1f1;
+}
+
+/* Campo de senha com o botão "Mostrar" dentro */
+.campo-senha {
+    position: relative;
+}
+
+.campo-senha input {
+    padding-right: 84px;
+}
+
+.mostrar-senha {
+    position: absolute;
+    right: 6px;
+    top: 50%;
+    transform: translateY(-50%);
+    border: none;
+    background: var(--verde-claro);
+    color: var(--verde);
+    font: inherit;
+    font-size: 0.85rem;
+    padding: 5px 10px;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.mostrar-senha:hover {
+    background: var(--verde);
+    color: #fff;
+}
+
+.aviso-caps {
+    margin: 0;
+    font-size: 0.9rem;
+    color: var(--manutencao);
+    font-weight: 600;
+}
+
+.botao-entrar {
+    margin-top: 14px;
+    padding: 11px;
+    border: none;
+    border-radius: 6px;
+    background: var(--verde);
+    color: #fff;
+    font: inherit;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.botao-entrar:hover {
+    background: #244a40;
+}
+
+.aviso-login {
+    padding: 10px 14px;
+    border-radius: 8px;
+    margin: 12px 0;
+}
+
+.aviso-login.erro {
+    background: #f8e3e3;
+    border-left: 5px solid var(--ocupado);
+    color: #7a2323;
+}
+
+.aviso-login.info {
+    background: var(--verde-claro);
+    border-left: 5px solid var(--verde);
+}
+
+.aviso-login code {
+    background: #fff;
+    padding: 1px 5px;
+    border-radius: 4px;
+}

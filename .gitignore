@@ -19,3 +19,6 @@ CLAUDE.md
 CLAUDE.local.md
 .claude/
 .mcp.json
+
+# Usuários reais (hashes de senha): cada um cria o seu com criar_usuario.py
+app/controllers/db/usuarios.json

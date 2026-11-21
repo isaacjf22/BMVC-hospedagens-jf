@@ -34,7 +34,23 @@ def inicio():
     return ctl.render('inicio')
 
 
+# Login e logout (páginas públicas).
+
+@app.route('/login', method='GET')
+def login():
+    return ctl.render('login')
+
+@app.route('/login', method='POST')
+def login_entrar():
+    return ctl.render('login_entrar')
+
+@app.route('/logout')
+def logout():
+    return ctl.render('logout')
+
+
 # CRUD de quartos: GET mostra páginas, POST altera dados (e redireciona).
+# Área restrita: o Application só deixa passar quem fez login.
 
 @app.route('/quartos')
 def quartos():

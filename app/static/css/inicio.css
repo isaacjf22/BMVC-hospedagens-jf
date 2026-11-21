@@ -61,6 +61,29 @@ body {
     color: var(--verde);
 }
 
+/* Barra com o usuário logado (nome e botão "Sair") */
+.usuario-logado {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 16px;
+    font-size: 0.95rem;
+}
+
+.usuario-logado .perfil {
+    background: var(--terracota);
+    padding: 2px 10px;
+    border-radius: 12px;
+    font-size: 0.8rem;
+}
+
+.usuario-logado a {
+    color: #fff;
+    font-weight: 600;
+}
+
 .destaque {
     max-width: 480px;
     margin: -22px auto 0;
