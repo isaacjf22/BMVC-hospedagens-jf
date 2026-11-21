@@ -15,7 +15,7 @@ O projeto segue a arquitetura **MVC** no formato do BMVC: as rotas ficam no `rou
 | Nível | Propósito | Interface | Vídeo | Commit de entrega | Status |
 |:---:|---|---|---|---|:---:|
 | **1** | Servir uma página própria, com propósito claro, carregando CSS e JS funcionais | Web (`/`) | [Assistir](https://youtu.be/LI_jX0NuIfc) | `nivel 1 concluído` | Concluído |
-| **2** | CRUD completo do modelo `Quarto`, com persistência em JSON e validação no servidor | Web (`/quartos`) | (em breve) | `nivel 2 concluído` | Em andamento |
+| **2** | CRUD completo do modelo `Quarto`, com persistência em JSON e validação no servidor | Web (`/quartos`) | [Assistir](https://youtu.be/LgQ_bkzLPaE) | `nivel 2 concluído` | Concluído |
 | **3** | A liberar | — | — | — | Bloqueado |
 | **4** | A liberar | — | — | — | Bloqueado |
 
@@ -50,7 +50,7 @@ O projeto segue a arquitetura **MVC** no formato do BMVC: as rotas ficam no `rou
 - **CSS** (`gestao.css`): tabela, formulário, botões e avisos de sucesso/erro; no celular a tabela vira uma lista de cartões. O `inicio.css` continua dando a identidade visual (cores, topo e o novo menu de navegação).
 - **JS** (`gestao.js`): confirmação antes de excluir, busca na tabela por número/tipo/status com contador, aviso de sucesso que some sozinho e validação do formulário antes do envio (destacando os campos inválidos). O servidor valida de novo, então a regra continua valendo mesmo sem JS.
 
-**Vídeo de apresentação (até 6 min):** em breve
+**Vídeo de apresentação (até 6 min):** [assistir no YouTube](https://youtu.be/LgQ_bkzLPaE)
 
 ## Funcionalidades
 

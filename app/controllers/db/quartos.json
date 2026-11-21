@@ -21,11 +21,11 @@
         "status": "disponivel"
     },
     {
-        "numero": 201,
+        "numero": 204,
         "tipo": "Família",
         "capacidade": 4,
         "diaria": 290.0,
-        "status": "disponivel"
+        "status": "ocupado"
     },
     {
         "numero": 202,
