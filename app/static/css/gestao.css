@@ -1,0 +1,189 @@
+/* Páginas de gerenciamento dos quartos (CRUD).
+   As cores vêm das variáveis definidas em inicio.css. */
+
+.cabecalho-gestao {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+/* Botões */
+.botao {
+    display: inline-block;
+    padding: 7px 14px;
+    border-radius: 6px;
+    border: 1px solid var(--verde);
+    background: #fff;
+    color: var(--verde);
+    font: inherit;
+    font-size: 0.95rem;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.botao:hover {
+    background: var(--verde-claro);
+}
+
+.botao.principal {
+    background: var(--verde);
+    color: #fff;
+}
+
+.botao.principal:hover {
+    background: #244a40;
+}
+
+.botao.perigo {
+    border-color: var(--ocupado);
+    color: var(--ocupado);
+}
+
+.botao.perigo:hover {
+    background: var(--ocupado);
+    color: #fff;
+}
+
+/* Avisos de sucesso e erro */
+.aviso {
+    padding: 12px 16px;
+    border-radius: 8px;
+    margin: 16px 0;
+    transition: opacity 0.6s;
+}
+
+.aviso.sucesso {
+    background: var(--verde-claro);
+    border-left: 5px solid var(--verde);
+}
+
+.aviso.erro {
+    background: #f8e3e3;
+    border-left: 5px solid var(--ocupado);
+    color: #7a2323;
+}
+
+.aviso.sumindo {
+    opacity: 0;
+}
+
+/* Busca */
+.busca {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin: 16px 0;
+}
+
+.busca input {
+    flex: 1;
+    min-width: 220px;
+    padding: 9px 12px;
+    border: 1px solid #c9c2b6;
+    border-radius: 6px;
+    font: inherit;
+}
+
+/* Tabela */
+.tabela-quartos {
+    width: 100%;
+    border-collapse: collapse;
+    background: #fff;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.tabela-quartos th,
+.tabela-quartos td {
+    padding: 12px;
+    text-align: left;
+    border-bottom: 1px solid #eee6da;
+}
+
+.tabela-quartos th {
+    background: var(--verde);
+    color: #fff;
+    font-weight: 600;
+}
+
+.tabela-quartos tbody tr:hover {
+    background: var(--verde-claro);
+}
+
+.acoes {
+    display: flex;
+    gap: 8px;
+}
+
+.acoes form {
+    margin: 0;
+}
+
+/* Formulário */
+.form-quarto {
+    display: grid;
+    gap: 16px;
+    max-width: 480px;
+    background: #fff;
+    padding: 24px;
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.form-quarto label {
+    display: grid;
+    gap: 6px;
+    font-weight: 600;
+}
+
+.form-quarto input,
+.form-quarto select {
+    padding: 9px 12px;
+    border: 1px solid #c9c2b6;
+    border-radius: 6px;
+    font: inherit;
+    font-weight: normal;
+}
+
+.form-quarto .invalido {
+    border-color: var(--ocupado);
+    background: #fdf1f1;
+}
+
+.botoes-form {
+    display: flex;
+    gap: 10px;
+}
+
+/* No celular, cada linha da tabela vira um cartão */
+@media (max-width: 640px) {
+    .tabela-quartos thead {
+        display: none;
+    }
+
+    .tabela-quartos,
+    .tabela-quartos tbody,
+    .tabela-quartos tr,
+    .tabela-quartos td {
+        display: block;
+    }
+
+    .tabela-quartos tr {
+        border-bottom: 3px solid var(--areia);
+        padding: 8px 0;
+    }
+
+    .tabela-quartos td {
+        border: none;
+        padding: 6px 12px;
+    }
+
+    .tabela-quartos td[data-rotulo]::before {
+        content: attr(data-rotulo) ": ";
+        font-weight: 600;
+    }
+}
