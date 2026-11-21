@@ -16,7 +16,7 @@ O projeto segue a arquitetura **MVC** no formato do BMVC: as rotas ficam no `rou
 |:---:|---|---|---|---|:---:|
 | **1** | Servir uma página própria, com propósito claro, carregando CSS e JS funcionais | Web (`/`) | [Assistir](https://youtu.be/LI_jX0NuIfc) | `nivel 1 concluído` | Concluído |
 | **2** | CRUD completo do modelo `Quarto`, com persistência em JSON e validação no servidor | Web (`/quartos`) | [Assistir](https://youtu.be/LgQ_bkzLPaE) | `nivel 2 concluído` | Concluído |
-| **3** | Controle de acesso: login, sessão e área restrita protegendo o CRUD de quartos | Web (`/login`) | — | `nivel 3 concluído` | Concluído |
+| **3** | Controle de acesso: login, sessão e área restrita protegendo o CRUD de quartos | Web (`/login`) | [Assistir](https://youtu.be/98v4sIiP1ZQ) | `nivel 3 concluído` | Concluído |
 | **4** | A liberar | — | — | — | Bloqueado |
 
 > **Como ler a tabela:** a coluna *Commit de entrega* mostra o nome do commit que marca o nível finalizado. Para ver o projeto naquele momento, basta procurar esse commit (ou a tag de mesmo nome) no histórico.
@@ -73,7 +73,7 @@ O projeto segue a arquitetura **MVC** no formato do BMVC: as rotas ficam no `rou
 - **CSS** (`login.css`): cartão de login com a identidade visual da hospedagem; o `inicio.css` ganhou a barra do usuário logado.
 - **JS** (`login.js`): botão **Mostrar/Ocultar** senha, aviso de **Caps Lock** ligado e bloqueio do envio com campos vazios. Nas páginas de gestão continua o `gestao.js` (busca, confirmação de exclusão etc.).
 
-**Vídeo de apresentação (até 10 min):** a publicar
+**Vídeo de apresentação (até 10 min):** [assistir no YouTube](https://youtu.be/98v4sIiP1ZQ)
 
 ## Funcionalidades
 
