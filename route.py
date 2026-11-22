@@ -1,5 +1,11 @@
+# O eventlet precisa ajustar a biblioteca padrão (rede, threads) antes de
+# qualquer outro import, para atender várias conexões WebSocket ao mesmo tempo.
+import eventlet
+eventlet.monkey_patch()
+
 import os
 
+import socketio
 from app.controllers.application import Application
 from bottle import Bottle, route, run, request, static_file
 from bottle import redirect, template, response
@@ -80,8 +86,14 @@ def quarto_excluir(numero):
 #-----------------------------------------------------------------------------
 
 
+# Nível IV: o Socket.IO "embrulha" o app Bottle. Requisições /socket.io/
+# vão para o WebSocket (classe Realtime); todas as outras, para o Bottle.
+servidor = socketio.WSGIApp(ctl.realtime.sio, app)
+
+
 if __name__ == '__main__':
 
-    # O 0.0.0.0 que o Bottle mostra não abre no navegador; use localhost.
+    # O run() do Bottle não atende WebSocket, então quem serve é o eventlet.
+    # Sem reloader: o recarregamento automático do Bottle conflita com ele.
     print('Acesse no navegador: http://localhost:8080/')
-    run(app, host='0.0.0.0', port=8080, debug=True)
+    eventlet.wsgi.server(eventlet.listen(('0.0.0.0', 8080)), servidor)

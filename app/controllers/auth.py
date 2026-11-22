@@ -1,7 +1,7 @@
 import os
 import secrets
 
-from bottle import request, response
+from bottle import BaseRequest, request, response
 
 from app.controllers.usuariorecord import UsuarioRecord
 
@@ -54,7 +54,18 @@ class Auth:
             return None
         return self.usuarios.buscar(login)
 
-    def _id_da_sessao(self):
+    def usuario_da_requisicao(self, environ):
+        """Igual a usuario_logado(), mas para uma requisição fora do Bottle.
+
+        Usado pelo WebSocket: na conexão, o Socket.IO entrega só o
+        'environ' (dados brutos da requisição, com os cookies).
+        """
+        login = self._sessoes.get(self._id_da_sessao(BaseRequest(environ)))
+        if login is None:
+            return None
+        return self.usuarios.buscar(login)
+
+    def _id_da_sessao(self, requisicao=request):
         # Se o cookie foi alterado no navegador, a assinatura não confere
         # e o Bottle devolve None.
-        return request.get_cookie(self.COOKIE, secret=self.SEGREDO)
+        return requisicao.get_cookie(self.COOKIE, secret=self.SEGREDO)

@@ -1,0 +1,79 @@
+/* Nível IV: elementos do tempo real na página de gerenciamento.
+   As cores vêm das variáveis definidas em inicio.css. */
+
+/* Indicador do estado da conexão WebSocket */
+.conexao {
+    margin-left: auto;
+    padding: 4px 12px;
+    border-radius: 12px;
+    font-size: 0.85rem;
+    background: #e4e4e4;
+    color: #555;
+}
+
+.conexao::before {
+    content: "●  ";
+}
+
+.conexao.conectado {
+    background: var(--verde-claro);
+    color: var(--verde);
+}
+
+.conexao.reconectando {
+    background: #fbf1dc;
+    color: var(--manutencao);
+}
+
+.conexao.desconectado {
+    background: #f6e1e1;
+    color: var(--ocupado);
+}
+
+/* Avisos flutuantes das alterações feitas em outras abas */
+.notificacoes {
+    position: fixed;
+    right: 16px;
+    bottom: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    z-index: 10;
+}
+
+.notificacao {
+    margin: 0;
+    padding: 10px 16px;
+    border-radius: 8px;
+    background: var(--verde);
+    color: #fff;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    animation: entrar 0.3s ease-out;
+}
+
+@keyframes entrar {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: none; }
+}
+
+/* Destaque breve na linha que mudou e saída da linha excluída */
+.tabela-quartos tbody tr.mudou {
+    animation: piscar 2.5s ease-out;
+}
+
+@keyframes piscar {
+    0%, 30% { background: #fde7c8; }
+    100% { background: transparent; }
+}
+
+.tabela-quartos tbody tr.saindo {
+    opacity: 0;
+    background: #f6e1e1;
+    transition: opacity 0.6s;
+}
+
+/* A tabela fica escondida quando não há quartos (o CSS do celular
+   muda o display dela, então o hidden precisa ser reforçado aqui). */
+.tabela-quartos[hidden] {
+    display: none;
+}

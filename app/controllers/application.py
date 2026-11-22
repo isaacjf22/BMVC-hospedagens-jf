@@ -2,6 +2,7 @@ from bottle import template, request, redirect
 
 from app.controllers.auth import Auth
 from app.controllers.datarecord import DataRecord
+from app.controllers.realtime import Realtime
 from app.models.quarto import Quarto
 
 
@@ -44,6 +45,7 @@ class Application():
         }
         self.models = DataRecord()
         self.auth = Auth()  # composição: o Application tem um Auth
+        self.realtime = Realtime(self.auth)  # e um Realtime (WebSocket)
 
 
     def render(self, page, parametro=None):
@@ -121,6 +123,7 @@ class Application():
             self.models.adicionar_quarto(quarto)
         except ValueError as erro:
             return self._formulario(dados=dados, erro=str(erro))
+        self.realtime.quarto_criado(quarto)  # avisa as outras abas
         redirect('/quartos?msg=criado')
 
 
@@ -141,6 +144,7 @@ class Application():
         except ValueError as erro:
             return self._formulario(dados=dados, erro=str(erro),
                                     numero_original=numero)
+        self.realtime.quarto_atualizado(numero, quarto)
         redirect('/quartos?msg=atualizado')
 
 
@@ -150,6 +154,7 @@ class Application():
             self.models.remover_quarto(numero)
         except ValueError:
             redirect('/quartos?msg=nao_encontrado')
+        self.realtime.quarto_excluido(numero)
         redirect('/quartos?msg=excluido')
 
     # ----------------------------------------------------------------------

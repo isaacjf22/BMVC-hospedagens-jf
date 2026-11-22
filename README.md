@@ -6,7 +6,7 @@ O projeto parte da base [bmvc_start_from_this](https://github.com/hgmachine/bmvc
 
 ## Finalidade
 
-Apresentar e gerenciar os quartos de uma hospedagem pela web: quais quartos existem, de que tipo são, quantas pessoas cabem em cada um, quanto custa a diária e se estão disponíveis, ocupados ou em manutenção. A partir do nível 2, os quartos podem ser cadastrados, editados e excluídos pelo navegador. A partir do nível 3, essa gestão fica numa área restrita, que só abre para funcionários com login e senha.
+Apresentar e gerenciar os quartos de uma hospedagem pela web: quais quartos existem, de que tipo são, quantas pessoas cabem em cada um, quanto custa a diária e se estão disponíveis, ocupados ou em manutenção. A partir do nível 2, os quartos podem ser cadastrados, editados e excluídos pelo navegador. A partir do nível 3, essa gestão fica numa área restrita, que só abre para funcionários com login e senha. No nível 4, as mudanças nos quartos aparecem **em tempo real** para todos que estão com a gestão aberta, via WebSocket.
 
 O projeto segue a arquitetura **MVC** no formato do BMVC: as rotas ficam no `route.py`, o controlador `Application` decide qual página montar, o `DataRecord` cuida do acesso aos dados e as páginas são templates `.tpl` do Bottle, com CSS e JavaScript próprios.
 
@@ -17,7 +17,7 @@ O projeto segue a arquitetura **MVC** no formato do BMVC: as rotas ficam no `rou
 | **1** | Servir uma página própria, com propósito claro, carregando CSS e JS funcionais | Web (`/`) | [Assistir](https://youtu.be/LI_jX0NuIfc) | `nivel 1 concluído` | Concluído |
 | **2** | CRUD completo do modelo `Quarto`, com persistência em JSON e validação no servidor | Web (`/quartos`) | [Assistir](https://youtu.be/LgQ_bkzLPaE) | `nivel 2 concluído` | Concluído |
 | **3** | Controle de acesso: login, sessão e área restrita protegendo o CRUD de quartos | Web (`/login`) | [Assistir](https://youtu.be/98v4sIiP1ZQ) | `nivel 3 concluído` | Concluído |
-| **4** | A liberar | — | — | — | Bloqueado |
+| **4** | Atualização em tempo real (WebSocket/Socket.IO) da gestão de quartos entre várias abas e usuários | Web (`/quartos`) | — | `nivel 4 concluído` | Concluído |
 
 > **Como ler a tabela:** a coluna *Commit de entrega* mostra o nome do commit que marca o nível finalizado. Para ver o projeto naquele momento, basta procurar esse commit (ou a tag de mesmo nome) no histórico.
 
@@ -75,6 +75,33 @@ O projeto segue a arquitetura **MVC** no formato do BMVC: as rotas ficam no `rou
 
 **Vídeo de apresentação (até 10 min):** [assistir no YouTube](https://youtu.be/98v4sIiP1ZQ)
 
+### Nível 4: Atualização em tempo real (WebSocket)
+
+**Propósito:** quando um funcionário cria, edita (inclusive o status) ou exclui um quarto, **todas as outras abas e usuários com a gestão aberta veem a mudança na hora, sem recarregar a página**. O CRUD do nível 2 e o login do nível 3 continuam valendo.
+
+| Evento (servidor → navegador) | Quando é enviado | O que a outra aba faz |
+|---|---|---|
+| `quarto_criado` | Depois de gravar um quarto novo | Insere a linha na tabela, na ordem do número |
+| `quarto_atualizado` | Depois de gravar uma edição | Troca a linha antiga pela nova (o número pode ter mudado) |
+| `quarto_excluido` | Depois de remover um quarto | Remove a linha com uma animação |
+
+- **Tecnologia:** [Socket.IO](https://socket.io/) com `python-socketio` e `eventlet`, as bibliotecas que já vinham no Dockerfile da base. O `socketio.WSGIApp` "embrulha" o app Bottle: o caminho `/socket.io/` vai para o WebSocket e todo o resto continua nas rotas do Bottle. Quem serve é o `eventlet.wsgi`, porque o `run()` do Bottle não mantém conexões abertas.
+- **Realtime (controller):** classe própria em `app/controllers/realtime.py`, **composta pelo `Application`** (`self.realtime`), como o `DataRecord` e o `Auth`. Tem um método por acontecimento (`quarto_criado`, `quarto_atualizado`, `quarto_excluido`), que faz o `emit` com o `to_dict()` do quarto. O Model `Quarto` continua sem conhecer Bottle ou Socket.IO.
+- **O socket só notifica:** as alterações continuam sendo feitas pelas rotas `POST` protegidas. O `Application` só avisa o `Realtime` **depois** de gravar com sucesso; se a validação falha, nenhum evento é enviado. Não existe evento que grave dados vindo do navegador.
+- **Só para quem fez login:** no evento `connect`, o `Realtime` pede ao `Auth` para conferir o cookie de sessão assinado (`usuario_da_requisicao`). Sem sessão válida, a conexão é recusada. Os eventos levam só dados de quartos, nunca de usuários.
+- **Cliente:** `socket.io.min.js` (versão 4.8.1, compatível com o `python-socketio` 5) servido como arquivo estático, sem depender de CDN.
+- **JS** (`realtime.js`): escuta os eventos e atualiza a tabela no DOM (sempre com `textContent`, nunca HTML vindo do socket), destaca a linha alterada e mostra um aviso no canto da tela. O `gestao.js` foi ajustado para que a busca e a confirmação de exclusão funcionem também nas linhas que chegam em tempo real.
+- **CSS** (`realtime.css`): indicador de conexão (*conectado*, *reconectando*, *sem conexão*), destaque da linha que mudou e avisos flutuantes.
+
+**Como testar com duas abas/usuários:**
+
+1. Crie dois usuários com `python criar_usuario.py` (por exemplo, um administrador e uma recepcionista).
+2. Rode `python route.py` e abra `http://localhost:8080/login` numa janela normal e numa **janela anônima** (cada uma tem seus próprios cookies, então dá para entrar com usuários diferentes).
+3. Entre com um usuário em cada janela e deixe as duas em `/quartos`, lado a lado. O indicador deve mostrar **"Tempo real: conectado"**.
+4. Numa janela, cadastre, edite (ex.: mude o status para *Ocupado*) ou exclua um quarto. A outra janela atualiza a tabela sozinha, com a linha destacada e um aviso.
+
+**Vídeo de apresentação (até 15 min):** a publicar
+
 ## Funcionalidades
 
 - **Página inicial:** nome, descrição da hospedagem e destaque com quantos quartos estão disponíveis no dia.
@@ -82,6 +109,7 @@ O projeto segue a arquitetura **MVC** no formato do BMVC: as rotas ficam no `rou
 - **Filtros:** por status e por tipo, que podem ser combinados, atualizando a lista sem recarregar a página.
 - **Login** (`/login`): acesso dos funcionários, com senha guardada como hash e sessão por cookie assinado.
 - **Gerenciar quartos** (`/quartos`, área restrita): cadastrar, editar e excluir quartos, com busca na tabela, confirmação de exclusão e mensagens de erro legíveis (ex.: "Já existe um quarto com o número 101.").
+- **Tempo real:** as alterações feitas por um funcionário aparecem na hora para os outros que estão com a gestão aberta, com indicador de conexão.
 
 ## Arquitetura (MVC)
 
@@ -90,6 +118,7 @@ O projeto segue a arquitetura **MVC** no formato do BMVC: as rotas ficam no `rou
 | **Rota** | Recebe a requisição e só chama `ctl.render('<página>')`. Não contém lógica | `route.py` |
 | **Controller** | O `Application` guarda as páginas em `self.pages` e monta cada uma, buscando os dados no `DataRecord`. Antes, confere com o `Auth` se a página é restrita | `app/controllers/application.py` |
 | **Auth** | Login, logout e sessões (cookie assinado + dicionário no servidor) | `app/controllers/auth.py` |
+| **Realtime** | Servidor Socket.IO: aceita só conexões de quem fez login e envia os avisos de quartos criados, editados e excluídos | `app/controllers/realtime.py` |
 | **ArquivoJSON** | Classe base que lê e grava listas de objetos em JSON | `app/controllers/arquivojson.py` |
 | **DataRecord / UsuarioRecord** | Herdam do `ArquivoJSON` e oferecem as operações de quartos e de usuários | `app/controllers/datarecord.py`, `usuariorecord.py` |
 | **Model** | Classes com os dados encapsulados e as regras do próprio objeto (validação dos campos, se o quarto está disponível, conferência da senha). Não conhece o Bottle | `app/models/` |
@@ -102,23 +131,25 @@ Navegador  →  route.py  →  Application  →  Auth  →  UsuarioRecord  →  
                                │   (página restrita sem login? → /login)
                                ↓
                            DataRecord  →  quartos.json
-                               ↓
+                               ↓          (gravou? Realtime → WebSocket → outras abas)
                   inicio.tpl / login.tpl / quartos.tpl
                   quarto_form.tpl  (+ CSS e JS)
 ```
 
-Nas ações que alteram dados (POST), o `Application` pede a operação ao `DataRecord`, que salva o JSON, e então redireciona o navegador de volta para `/quartos`.
+Nas ações que alteram dados (POST), o `Application` pede a operação ao `DataRecord`, que salva o JSON, avisa o `Realtime` (que envia o evento às outras abas) e então redireciona o navegador de volta para `/quartos`.
 
 Assim, a rota não tem lógica, o controlador não mexe direto no arquivo de dados e a View só exibe o que recebe.
 
 ## Estrutura
 
 ```
-route.py                Ponto de entrada: app Bottle, rotas e servidor na porta 8080
+route.py                Ponto de entrada: app Bottle + Socket.IO, rotas e servidor (eventlet) na porta 8080
+requirements.txt        Bibliotecas: bottle, python-socketio, eventlet
 app/
 ├── controllers/
 │   ├── application.py  Application: mapeia as páginas, protege as restritas e renderiza
 │   ├── auth.py         Auth: login, logout e sessões (cookie assinado)
+│   ├── realtime.py     Realtime: WebSocket (Socket.IO) que avisa as outras abas
 │   ├── arquivojson.py  ArquivoJSON: classe base que lê e grava JSON
 │   ├── datarecord.py   DataRecord: CRUD dos quartos (herda de ArquivoJSON)
 │   ├── usuariorecord.py  UsuarioRecord: usuários do sistema (herda de ArquivoJSON)
@@ -131,12 +162,13 @@ app/
 ├── views/html/
 │   ├── inicio.tpl      Página inicial da hospedagem
 │   ├── login.tpl       Página de login
-│   ├── quartos.tpl     Listagem de gerenciamento (Read e Delete)
+│   ├── quartos.tpl     Listagem de gerenciamento (Read e Delete), atualizada em tempo real
 │   ├── quarto_form.tpl Formulário de cadastro e edição (Create e Update)
 │   └── helper.tpl      Página de exemplo da base do professor
 └── static/
-    ├── css/            inicio.css, gestao.css, login.css (e helper.css, da base)
-    ├── js/             inicio.js, gestao.js, login.js (e helper.js, da base)
+    ├── css/            inicio.css, gestao.css, login.css, realtime.css (e helper.css, da base)
+    ├── js/             inicio.js, gestao.js, login.js, realtime.js, socket.io.min.js
+    │                   (cliente Socket.IO) (e helper.js, da base)
     └── img/
 criar_usuario.py        Script que cadastra usuários pelo terminal
 Dockerfile              Imagem com Python 3.12 e as bibliotecas do BMVC
@@ -156,7 +188,7 @@ A estrutura de pastas é herdada da base do professor e se mantém em todos os n
 ```bash
 git clone https://github.com/isaacjf22/BMVC-hospedagens-jf.git
 cd BMVC-hospedagens-jf
-pip install bottle
+pip install -r requirements.txt   # bottle, python-socketio e eventlet
 python criar_usuario.py   # só na primeira vez: cria o administrador
 python route.py
 ```
@@ -192,7 +224,10 @@ O container instala o Bottle e as demais bibliotecas do BMVC e executa o `route.
 
 | Mensagem ou sintoma | Causa provável | Solução |
 |---|---|---|
-| `ModuleNotFoundError: No module named 'bottle'` | O Bottle não está instalado | Rodar `pip install bottle` |
+| `ModuleNotFoundError: No module named 'bottle'` (ou `'socketio'`, `'eventlet'`) | As bibliotecas não estão instaladas | Rodar `pip install -r requirements.txt` |
+| Aviso `EventletDeprecationWarning` ao subir o servidor | O eventlet está em modo de manutenção, mas é a biblioteca usada pela base do professor | Pode ignorar: o servidor funciona normalmente |
+| Indicador "Tempo real: sem conexão" em `/quartos` | O servidor foi parado ou reiniciado (as sessões são apagadas) | Rodar o `route.py` e entrar de novo em `/login` |
+| A outra janela não atualiza sozinha | A página foi aberta antes de o servidor subir, ou a sessão daquela janela acabou | Recarregar a página (F5) e conferir o indicador de conexão |
 | "Não é possível acessar esse site" ou erro `-108` (`ERR_ADDRESS_INVALID`) no navegador | Foi aberto o endereço `http://0.0.0.0:8080/` mostrado no terminal, ou o servidor não está rodando | Abrir **http://localhost:8080/** com o `route.py` rodando |
 | `Not found: '/...'` (erro 404) | A rota digitada não existe | Usar `/`, `/inicio`, `/login`, `/quartos`, `/quartos/novo` ou `/helper` |
 | `/quartos` sempre volta para o login | Não há sessão ativa (reiniciar o servidor também encerra as sessões) | Entrar de novo em `/login` |

@@ -7,7 +7,11 @@
     <title>Hospedagem JF | Gerenciar quartos</title>
     <link rel="stylesheet" href="/static/css/inicio.css">
     <link rel="stylesheet" href="/static/css/gestao.css">
+    <link rel="stylesheet" href="/static/css/realtime.css">
     <script src="/static/js/gestao.js" defer></script>
+    <!-- Nível IV: cliente Socket.IO (v4, compatível com o python-socketio 5) -->
+    <script src="/static/js/socket.io.min.js" defer></script>
+    <script src="/static/js/realtime.js" defer></script>
 </head>
 
 <body>
@@ -30,6 +34,7 @@
     <main>
         <div class="cabecalho-gestao">
             <h2>Quartos cadastrados</h2>
+            <span id="conexao" class="conexao">Conectando…</span>
             <a href="/quartos/novo" class="botao principal">+ Novo quarto</a>
         </div>
 
@@ -42,8 +47,10 @@
             <span id="contador-busca" class="contador"></span>
         </div>
 
-        % if quartos:
-        <table class="tabela-quartos">
+        <!-- Avisos das alterações feitas em outras abas (tempo real) -->
+        <div id="notificacoes" class="notificacoes" aria-live="polite"></div>
+
+        <table class="tabela-quartos" {{'' if quartos else 'hidden'}}>
             <thead>
                 <tr>
                     <th>Número</th>
@@ -56,7 +63,7 @@
             </thead>
             <tbody>
                 % for quarto in quartos:
-                <tr>
+                <tr data-numero="{{quarto.numero}}">
                     <td data-rotulo="Número">{{quarto.numero}}</td>
                     <td data-rotulo="Tipo">{{quarto.tipo}}</td>
                     <td data-rotulo="Capacidade">{{quarto.capacidade}} pessoa(s)</td>
@@ -76,13 +83,11 @@
             </tbody>
         </table>
         <p id="sem-resultado" class="vazio" hidden>Nenhum quarto encontrado nessa busca.</p>
-        % else:
-        <p class="vazio">Nenhum quarto cadastrado ainda.</p>
-        % end
+        <p id="sem-quartos" class="vazio" {{'hidden' if quartos else ''}}>Nenhum quarto cadastrado ainda.</p>
     </main>
 
     <footer class="rodape">
-        Hospedagem JF &middot; Projeto BMVC III &middot; Orientação a Objetos (UnB)
+        Hospedagem JF &middot; Projeto BMVC IV &middot; Orientação a Objetos (UnB)
     </footer>
 </body>
 

@@ -2,14 +2,16 @@
 // O servidor valida tudo de novo: o JS só deixa o uso mais confortável.
 
 // 1. Confirmação antes de excluir um quarto
+// O "ouvinte" fica no documento (delegação de eventos), então vale também
+// para as linhas que chegam depois, em tempo real, pelo realtime.js.
 function prepararExclusao() {
-    document.querySelectorAll('.form-excluir').forEach(function (form) {
-        form.addEventListener('submit', function (evento) {
-            const numero = form.dataset.numero;
-            if (!confirm('Excluir o quarto ' + numero + '? Essa ação não pode ser desfeita.')) {
-                evento.preventDefault();
-            }
-        });
+    document.addEventListener('submit', function (evento) {
+        const form = evento.target;
+        if (!form.classList.contains('form-excluir')) return;
+        const numero = form.dataset.numero;
+        if (!confirm('Excluir o quarto ' + numero + '? Essa ação não pode ser desfeita.')) {
+            evento.preventDefault();
+        }
     });
 }
 
@@ -18,11 +20,13 @@ function prepararBusca() {
     const campo = document.getElementById('busca');
     if (!campo) return;
 
-    const linhas = document.querySelectorAll('.tabela-quartos tbody tr');
     const contador = document.getElementById('contador-busca');
     const semResultado = document.getElementById('sem-resultado');
 
     function filtrar() {
+        // As linhas são buscadas de novo a cada vez, porque o tempo real
+        // pode ter adicionado ou removido alguma.
+        const linhas = document.querySelectorAll('.tabela-quartos tbody tr');
         const termo = campo.value.trim().toLowerCase();
         let visiveis = 0;
         linhas.forEach(function (linha) {
@@ -31,10 +35,11 @@ function prepararBusca() {
             if (combina) visiveis++;
         });
         contador.textContent = 'Mostrando ' + visiveis + ' de ' + linhas.length + ' quartos';
-        if (semResultado) semResultado.hidden = visiveis > 0;
+        if (semResultado) semResultado.hidden = visiveis > 0 || linhas.length === 0;
     }
 
     campo.addEventListener('input', filtrar);
+    window.atualizarBusca = filtrar;  // usado pelo realtime.js
     filtrar();
 }
 
