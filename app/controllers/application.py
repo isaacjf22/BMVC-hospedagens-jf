@@ -142,8 +142,7 @@ class Application():
             quarto = Quarto(**dados)
             self.models.atualizar_quarto(numero, quarto)
         except ValueError as erro:
-            return self._formulario(dados=dados, erro=str(erro),
-                                    numero_original=numero)
+            return self._formulario(dados=dados, erro=str(erro),                                    numero_original=numero)
         self.realtime.quarto_atualizado(numero, quarto)
         redirect('/quartos?msg=atualizado')
 

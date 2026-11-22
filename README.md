@@ -17,7 +17,7 @@ O projeto segue a arquitetura **MVC** no formato do BMVC: as rotas ficam no `rou
 | **1** | Servir uma página própria, com propósito claro, carregando CSS e JS funcionais | Web (`/`) | [Assistir](https://youtu.be/LI_jX0NuIfc) | `nivel 1 concluído` | Concluído |
 | **2** | CRUD completo do modelo `Quarto`, com persistência em JSON e validação no servidor | Web (`/quartos`) | [Assistir](https://youtu.be/LgQ_bkzLPaE) | `nivel 2 concluído` | Concluído |
 | **3** | Controle de acesso: login, sessão e área restrita protegendo o CRUD de quartos | Web (`/login`) | [Assistir](https://youtu.be/98v4sIiP1ZQ) | `nivel 3 concluído` | Concluído |
-| **4** | Atualização em tempo real (WebSocket/Socket.IO) da gestão de quartos entre várias abas e usuários | Web (`/quartos`) | — | `nivel 4 concluído` | Concluído |
+| **4** | Atualização em tempo real (WebSocket/Socket.IO) da gestão de quartos entre várias abas e usuários | Web (`/quartos`) | [Assistir](https://youtu.be/y1WVbFFfMgA) | `nivel 4 concluído` | Concluído |
 
 > **Como ler a tabela:** a coluna *Commit de entrega* mostra o nome do commit que marca o nível finalizado. Para ver o projeto naquele momento, basta procurar esse commit (ou a tag de mesmo nome) no histórico.
 
@@ -100,7 +100,7 @@ O projeto segue a arquitetura **MVC** no formato do BMVC: as rotas ficam no `rou
 3. Entre com um usuário em cada janela e deixe as duas em `/quartos`, lado a lado. O indicador deve mostrar **"Tempo real: conectado"**.
 4. Numa janela, cadastre, edite (ex.: mude o status para *Ocupado*) ou exclua um quarto. A outra janela atualiza a tabela sozinha, com a linha destacada e um aviso.
 
-**Vídeo de apresentação (até 15 min):** a publicar
+**Vídeo de apresentação (até 15 min):** [assistir no YouTube](https://youtu.be/y1WVbFFfMgA)
 
 ## Funcionalidades
 

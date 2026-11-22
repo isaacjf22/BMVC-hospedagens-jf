@@ -11,7 +11,7 @@
         "tipo": "Casal",
         "capacidade": 2,
         "diaria": 180.0,
-        "status": "ocupado"
+        "status": "disponivel"
     },
     {
         "numero": 267,
@@ -47,5 +47,12 @@
         "capacidade": 1,
         "diaria": 120.0,
         "status": "ocupado"
+    },
+    {
+        "numero": 101,
+        "tipo": "Casal",
+        "capacidade": 2,
+        "diaria": 400.0,
+        "status": "disponivel"
     }
 ]
